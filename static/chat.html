@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Two user chat</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				background-color: #f9f9f9;
+				padding: 20px;
+			}
+			#chat-box {
+				border: 1px solid #ccc;
+				height: 300px;
+				overflow-y: scroll;
+				padding: 10px;
+			}
+			#message {
+				width: 75%;
+				padding: 10px;
+			}
+			#send {
+				padding: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>FastAPI WebSocket</h2>
+		<div id="chat-box"></div>
+		<input type="text" id="message" placeholder="Type here...." />
+		<button id="send">Send</button>
+		<script>
+			const ws = new WebSocket(`ws://${location.host}/ws`);
+			const chatBox = document.getElementById('chat-box');
+			const input = document.getElementById('message');
+			const send = document.getElementById('send');
+
+			ws.onmessage = (event) => {
+				const msg = document.createElement('div');
+				msg.textContent = event.data;
+				chatBox.appendChild(msg);
+				chatBox.scrollTop = chatBox.scrollHeight;
+			};
+
+			send.onclick = () => {
+				if (input.value.trim()) {
+					ws.send(input.value);
+
+					// Show your own message instantly
+					const msg = document.createElement('div');
+					// msg.textContent = 'You: ' + input.value;
+					chatBox.appendChild(msg);
+					chatBox.scrollTop = chatBox.scrollHeight;
+
+					input.value = '';
+				}
+			};
+
+			input.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter') {
+					send.click();
+				}
+			});
+		</script>
+	</body>
+</html>
